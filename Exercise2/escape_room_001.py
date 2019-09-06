@@ -321,6 +321,7 @@ if __name__=="__main__":
         for msg in msgHandler.recv():
             command = msg
             output = game.command(command)
+            msgHandler.send(output)
             time.sleep(0.25)
      
     main(sys.argv[1:])
