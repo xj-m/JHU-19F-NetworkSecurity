@@ -314,7 +314,7 @@ def main(args):
         time.sleep(0.25)
         msgHandler.recv()
     # section 2
-    game = EscapeRoomGame(EscapeRoomCommandHandler,c)
+    game = EscapeRoomGame(EscapeRoomCommandHandler,msgHandler)
      
     while game.status == "playing":
         for msg in msgHandler.recv():
