@@ -294,6 +294,9 @@ class msgHandler:
         return msg_list
         
 def main(args):
+    pass
+       
+if __name__=="__main__":
     s = socket.socket()
     host ="192.168.200.52"
     port = 19002
@@ -317,6 +320,5 @@ def main(args):
         for msg in msgHandler.recv():
             command = msg
             output = game.command(command)
-        
-if __name__=="__main__":
+     
     main(sys.argv[1:])
