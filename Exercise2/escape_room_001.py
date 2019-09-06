@@ -215,7 +215,6 @@ class EscapeRoomGame:
     def __init__(self, command_handler_class=EscapeRoomCommandHandler, msgHandler=None):
         # why not none
         self.room, self.player = None, None
-        
         self.command_handler_class = command_handler_class
         self.command_handler = None
         self.status = "void"
@@ -294,13 +293,11 @@ class msgHandler:
             msg_list.append(line)
         
 def main(args):
-
-
     s = socket.socket()
     host ="192.168.200.52"
     port = 19002
     s.connect((host,port))
-    print("success connnect")
+    print("success connnected")
     msgHandler = msgHandler(s)
 
     msgHandler.recv()
@@ -315,41 +312,10 @@ def main(args):
         msgHandler.recv()
     # section 2
     game = EscapeRoomGame(EscapeRoomCommandHandler,msgHandler)
-     
     while game.status == "playing":
         for msg in msgHandler.recv():
             command = msg
             output = game.command(command)
-
-
-
-    
-    s = socket.socket()         
-    print("Socket successfully created")
-    port = 12345
-    s.bind(('', port))         
-    print ("socket binded to %s" %(port))
-    s.listen(5)
-    print ("socket is listening")
-    c, addr = s.accept()      
-    print ('Got connection from', addr)
-
-    game = EscapeRoomGame(EscapeRoomCommandHandler,c)
-    # del first para
-    game.create_game(cheat=("--cheat" in args))
-    game.start()
-    
-    while game.status == "playing":
-        # get lines
-        data = c.recv(1024) # this could be multiple messages
-        data_as_string = data.decode() # convert from bytes to string
-        lines = data_as_string.split("\n")
-        for line in lines:
-            print(line)
-            # process each line.
-            command = line
-            output = game.command(command)
-            
         
 if __name__=="__main__":
     main(sys.argv[1:])
