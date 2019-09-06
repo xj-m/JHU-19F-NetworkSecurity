@@ -316,7 +316,8 @@ if __name__=="__main__":
         msgHandler.recv()
     # section 2
     game = EscapeRoomGame(EscapeRoomCommandHandler,msgHandler)
-    while game.status == "playing":
+    print("game created")
+    while True:
         for msg in msgHandler.recv():
             command = msg
             output = game.command(command)
