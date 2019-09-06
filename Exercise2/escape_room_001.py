@@ -291,6 +291,7 @@ class msgHandler:
         for line in lines:
             print("received:"+line)
             msg_list.append(line)
+        return msg_list
         
 def main(args):
     s = socket.socket()
