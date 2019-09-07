@@ -320,6 +320,7 @@ if __name__=="__main__":
     game.start()
     print("game created")
     while True:
+        print('0')
         lines = msgHandler.recv()
         print("1")
         if lines == None:
