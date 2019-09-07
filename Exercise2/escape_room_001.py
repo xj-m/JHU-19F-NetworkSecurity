@@ -316,16 +316,12 @@ if __name__=="__main__":
         msgHandler.recv()
     # section 2
     game = EscapeRoomGame(EscapeRoomCommandHandler,msgHandler)
+    game.start()
     print("game created")
-    i =1 
     while True:
-        print(i)
-        game.start()
-
         for msg in msgHandler.recv():
             print("msg captured")
             output = game.command(msg)
             time.sleep(0.25)
-        i=i+1
      
     main(sys.argv[1:])
