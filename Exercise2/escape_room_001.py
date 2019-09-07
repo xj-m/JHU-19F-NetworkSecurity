@@ -323,13 +323,12 @@ if __name__=="__main__":
     while True:
         print('0')
         lines = msgHandler.recv()
-        print("1")
         if lines == None:
             print("2")
             continue
         if lines[0] == "": 
             continue
-        for msg in msgHandler.recv():
+        for msg in lines():
             print("msg captured")
             output = game.command(msg)
             time.sleep(0.25)
