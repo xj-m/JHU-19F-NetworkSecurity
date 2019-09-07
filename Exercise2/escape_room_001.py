@@ -219,7 +219,7 @@ class EscapeRoomGame:
         self.command_handler = None
         self.status = "void"
         self.msgHandler = msgHandler
-        self.output = self.msgHandler.send
+        self.output = msgHandler.send
         
     def create_game(self, cheat=False):
         clock =  EscapeRoomObject("clock",  visible=True, time=100)
@@ -319,9 +319,8 @@ if __name__=="__main__":
     print("game created")
     while True:
         for msg in msgHandler.recv():
-            command = msg
-            output = game.command(command)
-            msgHandler.send(output)
+            print("msg captured")
+            output = game.command(msg)
             time.sleep(0.25)
      
     main(sys.argv[1:])
