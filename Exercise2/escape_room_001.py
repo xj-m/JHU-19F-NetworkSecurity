@@ -289,8 +289,8 @@ class msgHandler:
         lines = data_as_string.split("<EOL>\n")
         msg_list = []
         for line in lines:
-            print("received:"+line)
-            if msg is not None:
+            if line is not None:
+                print("received:"+line)
                 msg_list.append(line)
         return msg_list
         
