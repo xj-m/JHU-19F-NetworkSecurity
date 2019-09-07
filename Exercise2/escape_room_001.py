@@ -293,6 +293,7 @@ class msgHandler:
                 continue
             print("received:"+line)
             msg_list.append(line)
+        return msg_list
        
 def main(args):
     pass
