@@ -321,6 +321,8 @@ if __name__=="__main__":
     print("game created")
     while True:
         lines = msgHandler.recv()
+        if lines == None:
+            continue
         if len(lines) == 1:
             continue
         if lines[0] == "": 
