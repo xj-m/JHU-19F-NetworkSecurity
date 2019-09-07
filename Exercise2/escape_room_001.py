@@ -320,6 +320,8 @@ if __name__=="__main__":
     i =1 
     while True:
         print(i)
+        msgHandler.recv()
+
         for msg in msgHandler.recv():
             print("msg captured")
             output = game.command(msg)
