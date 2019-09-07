@@ -17,7 +17,6 @@ class msgHandler:
             # NOTE: cant get rid of this
             if line == "":
                 continue
-            print("received:"+line)
             msg_list.append(line)
 
 s = socket.socket()

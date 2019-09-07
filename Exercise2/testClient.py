@@ -15,7 +15,6 @@ class msgHandler:
         msg_list = []
         for line in lines:
             if line == "":
-                print("end of msg")
                 continue
             print("received:"+line)
             msg_list.append(line)
