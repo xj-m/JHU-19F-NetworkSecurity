@@ -328,7 +328,7 @@ if __name__=="__main__":
             continue
         if lines[0] == "": 
             continue
-        for msg in lines():
+        for msg in lines:
             print("msg captured")
             output = game.command(msg)
             time.sleep(0.25)
