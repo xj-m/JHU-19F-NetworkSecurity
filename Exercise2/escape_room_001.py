@@ -327,8 +327,6 @@ if __name__=="__main__":
         if lines == None:
             print("2")
             continue
-        if len(lines) == 1:
-            continue
         if lines[0] == "": 
             continue
         for msg in msgHandler.recv():
