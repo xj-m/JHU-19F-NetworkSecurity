@@ -14,6 +14,7 @@ class msgHandler:
         lines = data_as_string.split("<EOL>\n")
         msg_list = []
         for line in lines:
+            # NOTE: cant get rid of this
             if line == "":
                 continue
             print("received:"+line)
