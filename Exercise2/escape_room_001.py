@@ -290,7 +290,8 @@ class msgHandler:
         msg_list = []
         for line in lines:
             print("received:"+line)
-            msg_list.append(line)
+            if msg is not None:
+                msg_list.append(line)
         return msg_list
         
 def main(args):
