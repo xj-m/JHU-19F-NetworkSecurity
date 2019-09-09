@@ -12,7 +12,7 @@ class MsgHandler:
         data = string_to_send +"<EOL>\n"
         data_as_byte = str.encode(data)
         self.s.send(data_as_byte)
-        print("sent:".ljust(20)+string_to_send)
+        print("sent:".ljust(12)+string_to_send+'\n')
     def recv(self):
         data = self.s.recv(1024)
         data_as_string = data.decode()
@@ -21,7 +21,7 @@ class MsgHandler:
         for line in lines:
             if line == "":
                 continue
-            print("received:".ljust(20)+line)
+            print("received:".ljust(12)+line+'\n')
             msg_list.append(line)
         return msg_list
  
@@ -300,7 +300,7 @@ def main(args):
     host ="192.168.200.52"
     port = 19002
     s.connect((host,port))
-    print("success connnected")
+    print("Socket successfully created!")
 
     msgHandler = MsgHandler(s)
 
@@ -321,7 +321,7 @@ def main(args):
     game = EscapeRoomGame(ech,msgHandler)
     game.create_game()
     game.start()
-    print("game created")
+    print("Game created!")
     while game.status == "playing":
         lines = msgHandler.recv()
         for msg in lines:
