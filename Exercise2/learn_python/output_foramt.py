@@ -13,22 +13,16 @@ print("% 7.3o"% (25))
 # print exponential value 
 print("% 10.3E"% (356.08977)) 
 """
+
 # Align
+print_string = "I love geeksforgeeks"
+print(print_string)
+print (print_string.ljust(40, '-'))
+print(print_string.center(40))
+print(print_string.rjust(40))
 
-cstr = "I love geeksforgeeks"
-	
-# Printing the center aligned 
-# string with fillchr 
-print ("Center aligned string with fillchr: ") 
-print (cstr.center(40, '#')) 
-
-# Printing the left aligned 
-# string with "-" padding 
-print ("The left aligned string is : ") 
-print (lstr.ljust(40, '-')) 
-
-# Printing the right aligned string 
-# with "-" padding 
-print ("The right aligned string is : ") 
-print (rstr.rjust(40, '-')) 
-
+# column output
+data = [['a', 'b', 'c'], ['aaaaaaaaaa', 'b', 'c'], ['a', 'bbbbbbbbbb', 'c']]
+col_width = max(len(word) for row in data for word in row) + 2  # padding
+for row in data:
+    print ("".join(word.ljust(col_width) for word in row))
