@@ -5,26 +5,6 @@ import random, sys
 import socket
 import time
 
-class MsgHandler:
-    def __init__ (self, socket):
-        self.s = socket
-    def send(self, string_to_send):
-        data = string_to_send +"<EOL>\n"
-        data_as_byte = str.encode(data)
-        self.s.send(data_as_byte)
-        print("sent:".ljust(12)+string_to_send+'\n')
-    def recv(self):
-        data = self.s.recv(1024)
-        data_as_string = data.decode()
-        lines = data_as_string.split("<EOL>\n")
-        msg_list = []
-        for line in lines:
-            if line == "":
-                continue
-            print("received:".ljust(12)+line+'\n')
-            msg_list.append(line)
-        return msg_list
- 
 def create_container_contents(*escape_room_objects):
     return {obj.name: obj for obj in escape_room_objects}
     
@@ -51,7 +31,7 @@ class EscapeRoomObject:
         return self.name
         
 class EscapeRoomCommandHandler:
-    def __init__(self, room, player, output):
+    def __init__(self, room, player, output=print):
         self.room = room
         self.player = player
         self.output = output
@@ -232,8 +212,7 @@ def advance_time(room, clock):
     return event
                 
 class EscapeRoomGame:
-    def __init__(self, command_handler_class=EscapeRoomCommandHandler, msgHandler=None):
-        # why not none
+    def __init__(self, command_handler_class=EscapeRoomCommandHandler,msgHandler=None):
         self.room, self.player = None, None
         self.command_handler_class = command_handler_class
         self.command_handler = None
@@ -293,42 +272,14 @@ class EscapeRoomGame:
             elif self.player.name not in self.room["container"]:
                 self.output("VICTORY! You escaped!")
                 self.status = "escaped"
-
-def main(args):
-    # create socket
-    s = socket.socket()
-    host ="192.168.200.52"
-    port = 19002
-    s.connect((host,port))
-    print("Socket successfully created!")
-
-    msgHandler = MsgHandler(s)
-
-    # send student name
-    msgHandler.recv()
-    name = "xjmTest"
-    msgHandler.send(name)
-
-    # section 1
-    escape_strings = ["look mirror", "get hairpin", "unlock door with hairpin", "open door"]
-    for escape_string in escape_strings:
-        msgHandler.send(escape_string)
-        time.sleep(0.25)
-        msgHandler.recv()
         
-    # section 2
-    ech = EscapeRoomCommandHandler
-    game = EscapeRoomGame(ech,msgHandler)
-    game.create_game()
+def main(args):
+    game = EscapeRoomGame()
+    game.create_game(cheat=("--cheat" in args))
     game.start()
-    print("Game created!")
     while game.status == "playing":
-        lines = msgHandler.recv()
-        for msg in lines:
-            if msg == "":
-                continue
-            game.command(msg)
-            time.sleep(0.25)
-            
+        command = input(">> ")
+        output = game.command(command)
+        
 if __name__=="__main__":
     main(sys.argv[1:])
