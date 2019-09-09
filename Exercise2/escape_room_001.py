@@ -5,6 +5,26 @@ import random, sys
 import socket
 import time
 
+class msgHandler:
+    def __init__ (self, socket):
+        self.s = socket
+    def send(self, string_to_send):
+        data = string_to_send +"<EOL>\n"
+        data_as_byte = str.encode(data)
+        self.s.send(data_as_byte)
+        print("sent:"+string_to_send)
+    def recv(self):
+        data = self.s.recv(1024)
+        data_as_string = data.decode()
+        lines = data_as_string.split("<EOL>\n")
+        msg_list = []
+        for line in lines:
+            if line == "":
+                continue
+            print("received:"+line)
+            msg_list.append(line)
+        return msg_list
+ 
 def create_container_contents(*escape_room_objects):
     return {obj.name: obj for obj in escape_room_objects}
     
@@ -274,40 +294,19 @@ class EscapeRoomGame:
                 self.output("VICTORY! You escaped!")
                 self.status = "escaped"
 
-
-class msgHandler:
-    def __init__ (self, socket):
-        self.s = socket
-    def send(self, string_to_send):
-        data = string_to_send +"<EOL>\n"
-        data_as_byte = str.encode(data)
-        self.s.send(data_as_byte)
-        print("sent:"+string_to_send)
-    def recv(self):
-        data = self.s.recv(1024)
-        data_as_string = data.decode()
-        lines = data_as_string.split("<EOL>\n")
-        msg_list = []
-        for line in lines:
-            if line == "":
-                continue
-            print("received:"+line)
-            msg_list.append(line)
-        return msg_list
-       
 def main(args):
-    pass
-       
-if __name__=="__main__":
+    # create socket
     s = socket.socket()
     host ="192.168.200.52"
     port = 19002
     s.connect((host,port))
     print("success connnected")
+
     msgHandler = msgHandler(s)
 
+    # send student name
     msgHandler.recv()
-    name = "xiangjunTest"
+    name = "xjmTest"
     msgHandler.send(name)
 
     # section 1
@@ -316,17 +315,16 @@ if __name__=="__main__":
         msgHandler.send(escape_string)
         time.sleep(0.25)
         msgHandler.recv()
+        
     # section 2
-    game = EscapeRoomGame(EscapeRoomCommandHandler,msgHandler)
+    ech = EscapeRoomCommandHandler
+    game = EscapeRoomGame(ech,msgHandler)
+    game.create_game()
     game.start()
     print("game created")
-    while True:
-        print('0')
+    while game.status == "playing":
         lines = msgHandler.recv()
         if lines == None:
-            print("2")
-            continue
-        if lines[0] == "": 
             continue
         for msg in lines:
             if msg == "":
@@ -336,5 +334,7 @@ if __name__=="__main__":
             print("msg captured")
             output = game.command(msg)
             time.sleep(0.25)
-     
+
+
+if __name__=="__main__":
     main(sys.argv[1:])
