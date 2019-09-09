@@ -324,14 +324,9 @@ def main(args):
     print("game created")
     while game.status == "playing":
         lines = msgHandler.recv()
-        if lines == None:
-            continue
         for msg in lines:
             if msg == "":
                 continue
-            if msg == None:
-                continue
-            print("msg captured")
             game.command(msg)
             time.sleep(0.25)
             
