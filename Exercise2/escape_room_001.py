@@ -5,7 +5,7 @@ import random, sys
 import socket
 import time
 
-class msgHandler:
+class MsgHandler:
     def __init__ (self, socket):
         self.s = socket
     def send(self, string_to_send):
@@ -302,7 +302,7 @@ def main(args):
     s.connect((host,port))
     print("success connnected")
 
-    msgHandler = msgHandler(s)
+    msgHandler = MsgHandler(s)
 
     # send student name
     msgHandler.recv()
@@ -332,9 +332,8 @@ def main(args):
             if msg == None:
                 continue
             print("msg captured")
-            output = game.command(msg)
+            game.command(msg)
             time.sleep(0.25)
-
-
+            
 if __name__=="__main__":
     main(sys.argv[1:])
