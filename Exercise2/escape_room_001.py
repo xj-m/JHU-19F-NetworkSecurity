@@ -12,7 +12,7 @@ class MsgHandler:
         data = string_to_send +"<EOL>\n"
         data_as_byte = str.encode(data)
         self.s.send(data_as_byte)
-        print("sent:"+string_to_send)
+        print("sent:".ljust(20)+string_to_send)
     def recv(self):
         data = self.s.recv(1024)
         data_as_string = data.decode()
@@ -21,7 +21,7 @@ class MsgHandler:
         for line in lines:
             if line == "":
                 continue
-            print("received:"+line)
+            print("received:".ljust(20)+line)
             msg_list.append(line)
         return msg_list
  
