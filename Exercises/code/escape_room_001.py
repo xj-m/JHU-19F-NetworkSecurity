@@ -5,6 +5,25 @@ import random, sys
 import socket
 import time
 
+class MsgHandler:
+    def __init__ (self, socket):
+        self.s = socket
+    def send(self, string_to_send):
+        data = string_to_send +"<EOL>\n"
+        data_as_byte = str.encode(data)
+        self.s.send(data_as_byte)
+        print("sent:".ljust(12)+string_to_send+'\n')
+    def recv(self):
+        data = self.s.recv(1024)
+        data_as_string = data.decode()
+        lines = data_as_string.split("<EOL>\n")
+        msg_list = []
+        for line in lines:
+            if line == "":
+                continue
+            print("received:".ljust(12)+line+'\n')
+            msg_list.append(line)
+        return msg_list
 def create_container_contents(*escape_room_objects):
     return {obj.name: obj for obj in escape_room_objects}
     
@@ -228,8 +247,13 @@ class EscapeRoomGame:
         chest  = EscapeRoomObject("chest",  visible=True, openable=True, open=False, keyed=True, locked=True, unlockers=[hairpin])
         room   = EscapeRoomObject("room",   visible=True)
         player = EscapeRoomObject("player", visible=False, alive=True)
+        # NOTE: for hammer
+        hammer = EscapeRoomObject("hammer", visible =True, gettable = True)
+        
         
         # setup containers
+        # NOTE: add hammer
+        chest["container"] =create_container_contents(hammer) 
         player["container"]= {}
         chest["container"] = {}
         room["container"]  = create_container_contents(player, door, clock, mirror, hairpin, chest)
