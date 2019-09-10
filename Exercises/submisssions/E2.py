@@ -45,7 +45,7 @@ for escape_string in escape_strings:
 print("section 1 finished".center(100,'-')+"\n")
     
 # section 2
-game = EscapeRoomGame(msgHandler=msgHandler)
+game = EscapeRoomGame(output=msgHandler.send)
 game.create_game()
 game.start()
 while game.status == "playing":

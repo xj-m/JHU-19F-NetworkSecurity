@@ -5,25 +5,6 @@ import random, sys
 import socket
 import time
 
-class MsgHandler:
-    def __init__ (self, socket):
-        self.s = socket
-    def send(self, string_to_send):
-        data = string_to_send +"<EOL>\n"
-        data_as_byte = str.encode(data)
-        self.s.send(data_as_byte)
-        print("sent:".ljust(12)+string_to_send+'\n')
-    def recv(self):
-        data = self.s.recv(1024)
-        data_as_string = data.decode()
-        lines = data_as_string.split("<EOL>\n")
-        msg_list = []
-        for line in lines:
-            if line == "":
-                continue
-            print("received:".ljust(12)+line+'\n')
-            msg_list.append(line)
-        return msg_list
 def create_container_contents(*escape_room_objects):
     return {obj.name: obj for obj in escape_room_objects}
     
@@ -231,13 +212,15 @@ def advance_time(room, clock):
     return event
                 
 class EscapeRoomGame:
-    def __init__(self, command_handler_class=EscapeRoomCommandHandler,msgHandler=None):
+    def __init__(self, command_handler_class=EscapeRoomCommandHandler,output=None):
         self.room, self.player = None, None
         self.command_handler_class = command_handler_class
         self.command_handler = None
         self.status = "void"
-        self.msgHandler = msgHandler
-        self.output = msgHandler.send
+        if output == None:
+            self.output = print
+        else:
+            self.output = output
         
     def create_game(self, cheat=False):
         clock =  EscapeRoomObject("clock",  visible=True, time=100)
