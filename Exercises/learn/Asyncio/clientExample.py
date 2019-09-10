@@ -6,6 +6,7 @@ class EchoClientProtocol(asyncio.Protocol):
         self.loop = loop
 
     def connection_made(self, transport):
+        print("Connection made".center(50,'-'))
         transport.write(self.message.encode())
         print('Data sent: {!r}'.format(self.message))
 
@@ -13,7 +14,7 @@ class EchoClientProtocol(asyncio.Protocol):
         print('Data received: {!r}'.format(data.decode()))
 
     def connection_lost(self, exc):
-        print('The server closed the connection')
+        print('The server closed the connection'.center(50,'-'))
         print('Stop the event loop')
         self.loop.stop()
 

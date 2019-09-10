@@ -2,6 +2,7 @@ import asyncio
 
 class EchoServerClientProtocol(asyncio.Protocol):
     def connection_made(self, transport):
+        print("Connection made".center(50,'-'))
         peername = transport.get_extra_info('peername')
         print('Connection from {}'.format(peername))
         self.transport = transport
@@ -22,11 +23,10 @@ coro = loop.create_server(EchoServerClientProtocol, '127.0.0.1', 2345)
 server = loop.run_until_complete(coro)
 
 # Serve requests until Ctrl+C is pressed
-print('Serving on {}'.format(server.sockets[0].getsockname()))
+print('Serving on {}'.format(server.sockets[0].getsockname()).center(50,'-'))
 try:
     loop.run_forever()
 except KeyboardInterrupt:
-    print("key interupt!")
     pass
 
 # Close the server
