@@ -13,6 +13,9 @@ print("% 7.3o"% (25))
 # print exponential value 
 print("% 10.3E"% (356.08977)) 
 """
+def printt(string):
+    print(string+'test')
+printt("test")
 
 # Align
 print_string = "I love geeksforgeeks"
@@ -26,3 +29,4 @@ data = [['a', 'b', 'c'], ['aaaaaaaaaa', 'b', 'c'], ['a', 'bbbbbbbbbb', 'c']]
 col_width = max(len(word) for row in data for word in row) + 2  # padding
 for row in data:
     print ("".join(word.ljust(col_width) for word in row))
+
