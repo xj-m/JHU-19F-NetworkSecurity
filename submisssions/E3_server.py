@@ -1,10 +1,11 @@
-import asyncio, time
+import asyncio, time, sys
 from escape_room_001 import EscapeRoomGame
 from E3_DataHandler import DataHandler
+from formatter import *
 
 class ServerProtocol(asyncio.Protocol):
     def connection_made(self, tranport):
-        print('Connection made'.center(100,'-')+'\n')
+        print_announce('Connection made')
         self.dataHandler = DataHandler(tranport)
         self.game = EscapeRoomGame(output=self.dataHandler.send)
         self.game.create_game()
@@ -16,22 +17,23 @@ class ServerProtocol(asyncio.Protocol):
             self.dataHandler.send(self.game.command(cmd))
             time.sleep(0.25)
         if self.game.status !="playing":
-            print('Student server side finished!'.center(100,'-')+'\n')
+            print_announce('Student server side finished!')
 
-loop = asyncio.get_event_loop()
-coro = loop.create_server(ServerProtocol, '',4321)
-server = loop.run_until_complete(coro)
+def main(args):
+    loop = asyncio.get_event_loop()
+    coro = loop.create_server(ServerProtocol, '',1109)
+    server = loop.run_until_complete(coro)
 
-print('Servering on{}'.format(server.sockets[0].getsockname()).center(100,'-'))
-loop.set_debug(1)
-try:
-    loop.run_forever()
-except KeyboardInterrupt:
-    pass
+    print_announce('Servering on{}'.format(server.sockets[0].getsockname()))
+    # loop.set_debug(1)
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
 
-server.close()
-loop.run_until_complete(server.wait_closed())
-loop.close()
+    server.close()
+    loop.run_until_complete(server.wait_closed())
+    loop.close()
 
-        
-
+if __name__ == '__main__':
+    main(sys.argv[1:])

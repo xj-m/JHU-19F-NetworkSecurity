@@ -238,7 +238,6 @@ class EscapeRoomGame:
         # NOTE: add hammer
         chest["container"] =create_container_contents(hammer) 
         player["container"]= {}
-        chest["container"] = {}
         room["container"]  = create_container_contents(player, door, clock, mirror, hairpin, chest)
         
         # set initial descriptions (functions)
@@ -290,3 +289,4 @@ def main(args):
         
 if __name__=="__main__":
     main(sys.argv[1:])
+
