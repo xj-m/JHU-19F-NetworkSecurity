@@ -1,5 +1,4 @@
 from E3_client import ClientProtocol, asyncio, sys
-from __future__ import braces
 E3_check_socre_strings = 'RESULT,f5c4d25c919834fa6766d13f4457d1cd9390b4f112c8b8876b863052eb20848c'
 
 def main(args):

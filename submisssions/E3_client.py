@@ -1,6 +1,6 @@
 import asyncio,sys
 from E3_DataHandler import DataHandler
-from formatter import *
+import formatter
 
 PORT_NUM_STUDENT = 1109
 E3_STUDENT_CLIENT_SEND_STRINGS = ['SUBMIT,Xiangjun,xjm@jhu.edu,2,'+str(PORT_NUM_STUDENT), "look mirror", "get hairpin",

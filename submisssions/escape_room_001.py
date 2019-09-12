@@ -120,6 +120,7 @@ class EscapeRoomCommandHandler:
         if len(get_args) == 0:
             get_result = "Get what?"
         elif self.player["container"].get(get_args[0], None) != None:
+            # NOTE: what None servers for
             get_result = "You already have that"
         else:
             if len(get_args) > 1:
@@ -153,7 +154,25 @@ class EscapeRoomCommandHandler:
         items = ", ".join(["a "+item for item in self.player["container"]])
         self._run_triggers(object, "inventory")
         self.output("You are carrying {}".format(items))
-        
+    # E4: add command hit
+    def _cmd_hit(self,hit_args):
+        # no predicate
+        if len(hit_args)==0:
+            hit_result = "Hit what?"
+        # no tool
+        elif len(hit_args) ==1:
+            hit_result = "Hit {} with what?".format(hit_args[0])
+        else:
+            object = self.room['container'].get(hit_args[0],None)
+            unlock = False
+            # start here:
+        if not object or not object['visible']:
+            unlock_result = "You don't see that here"
+        elif not object['keyd'] and not object['keypad']:
+            unlock_result = "you can't hit that"
+        elif not object['locked']:
+            unlock_result = "It's already unloc"
+
     def command(self, command_string):
         # no command
         if command_string.strip == "":
@@ -226,19 +245,18 @@ class EscapeRoomGame:
         clock =  EscapeRoomObject("clock",  visible=True, time=100)
         mirror = EscapeRoomObject("mirror", visible=True)
         hairpin= EscapeRoomObject("hairpin",visible=False, gettable=True)
-        door  =  EscapeRoomObject("door",   visible=True, openable=True, open=False, keyed=True, locked=True, unlockers=[hairpin])
+        key = EscapeRoomObject("key",visible =False, gettable = True) # E4: add key
+        flyingkey = EscapeRoomObject('flyingkey',visible = True,gettable = False) # E4: add flyingkey
+        door  =  EscapeRoomObject("door",   visible=True, openable=True, open=False, keyed=True, locked=True, unlockers=[key]) # E4: replace hairipin with key
         chest  = EscapeRoomObject("chest",  visible=True, openable=True, open=False, keyed=True, locked=True, unlockers=[hairpin])
         room   = EscapeRoomObject("room",   visible=True)
         player = EscapeRoomObject("player", visible=False, alive=True)
-        # NOTE: for hammer
-        hammer = EscapeRoomObject("hammer", visible =True, gettable = True)
-        
+        hammer = EscapeRoomObject("hammer", visible =True, gettable = True) # E3: add hammer
         
         # setup containers
-        # NOTE: add hammer
-        chest["container"] =create_container_contents(hammer) 
+        chest["container"] =create_container_contents(hammer) # E3: add hammer
         player["container"]= {}
-        room["container"]  = create_container_contents(player, door, clock, mirror, hairpin, chest)
+        room["container"]  = create_container_contents(player, door, clock, mirror, hairpin, chest,key)# E3: add hammer, E4: add key
         
         # set initial descriptions (functions)
         room["description"]    = create_room_description(room)
