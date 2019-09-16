@@ -86,7 +86,7 @@ class EscapeRoomCommandHandler:
                 else:
                     unlock = True
                     
-            elif object["keypad"]:
+            elif object["keypd"]:
                 # TODO: For later Exercise
                 pass
             
@@ -156,6 +156,7 @@ class EscapeRoomCommandHandler:
         self.output("You are carrying {}".format(items))
     # E4: add command hit
     def _cmd_hit(self,hit_args):
+        hit_result = None
         # no predicate
         if len(hit_args)==0:
             hit_result = "Hit what?"
@@ -164,14 +165,34 @@ class EscapeRoomCommandHandler:
             hit_result = "Hit {} with what?".format(hit_args[0])
         else:
             object = self.room['container'].get(hit_args[0],None)
-            unlock = False
+            hit_down = False
             # start here:
-        if not object or not object['visible']:
-            unlock_result = "You don't see that here"
-        elif not object['keyd'] and not object['keypad']:
-            unlock_result = "you can't hit that"
-        elif not object['locked']:
-            unlock_result = "It's already unloc"
+            if not object or not object['visible']:
+                hit_result = "You don't see that here"
+            elif not object['hited']:
+                hit_result = "you can't hit that"
+            elif not object['flying']:
+                hit_result = "It's not flying, so you don't need to hit it"
+            
+            elif object['hited']:
+                hitter = self. player['container'].get(hit_args[-1], None)
+                if not hitter:
+                    hit_result = "You don't have a {}".format(hit_args[-1])
+                elif hitter not in object['hitters']:
+                    hit_result = "It can't used to hit this"
+                else:
+                    hit_down = True
+            
+            if hit_down:
+                hit_result = 'The hit worked'
+                object['flying'] = False
+                object['visible'] = False
+                self.room['container']['key']['visible'] = True
+                
+                self._run_triggers(object,'hit',hitter)
+
+        self.output(hit_result)
+
 
     def command(self, command_string):
         # no command
@@ -245,18 +266,18 @@ class EscapeRoomGame:
         clock =  EscapeRoomObject("clock",  visible=True, time=100)
         mirror = EscapeRoomObject("mirror", visible=True)
         hairpin= EscapeRoomObject("hairpin",visible=False, gettable=True)
+        hammer = EscapeRoomObject("hammer", visible =True, gettable = True) # E3: add hammer.
         key = EscapeRoomObject("key",visible =False, gettable = True) # E4: add key
-        flyingkey = EscapeRoomObject('flyingkey',visible = True,gettable = False) # E4: add flyingkey
+        flyingkey = EscapeRoomObject('flyingkey',visible = True,hittable = True,hit = False,hited = True,flying= True, hitters=[hammer], location =1) # E4: add flyingkey, add hitable, hitter  
         door  =  EscapeRoomObject("door",   visible=True, openable=True, open=False, keyed=True, locked=True, unlockers=[key]) # E4: replace hairipin with key
         chest  = EscapeRoomObject("chest",  visible=True, openable=True, open=False, keyed=True, locked=True, unlockers=[hairpin])
         room   = EscapeRoomObject("room",   visible=True)
         player = EscapeRoomObject("player", visible=False, alive=True)
-        hammer = EscapeRoomObject("hammer", visible =True, gettable = True) # E3: add hammer
         
         # setup containers
         chest["container"] =create_container_contents(hammer) # E3: add hammer
         player["container"]= {}
-        room["container"]  = create_container_contents(player, door, clock, mirror, hairpin, chest,key)# E3: add hammer, E4: add key
+        room["container"]  = create_container_contents(player, door, clock, mirror, hairpin, chest,key, flyingkey)# E3: add hammer, E4: add key
         
         # set initial descriptions (functions)
         room["description"]    = create_room_description(room)
@@ -307,4 +328,3 @@ def main(args):
         
 if __name__=="__main__":
     main(sys.argv[1:])
-
