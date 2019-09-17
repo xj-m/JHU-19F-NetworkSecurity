@@ -1,21 +1,25 @@
 import asyncio
 import sys
-from E4_DataHandler import DataHandler
-import formatter
+from E4_Datahandler import DataHandler
 
 PORT_NUM_STUDENT = 1109
-E3_STUDENT_CLIENT_SEND_STRINGS = ['SUBMIT,Xiangjun,xjm@jhu.edu,2,'+str(PORT_NUM_STUDENT), "look mirror", "get hairpin",
-                                  'unlock chest with hairpin', 'open chest', 'look in chest', 'get hammer in chest', "unlock door with hairpin", "open door"]
+E3_ESCAPE_STRING1 = ['SUBMIT,Xiangjun,xjm@jhu.edu,2,'+str(PORT_NUM_STUDENT), "look mirror", "get hairpin",
+                     'unlock chest with hairpin', 'open chest', 'look in chest', 'get hammer in chest', "hit flyingkey with hammer", "get key",
+                     "unlock door with key", "open door"]
+
+
+def printx(string):
+    print(string.center(80, '-')+'\n')
 
 
 class ClientProtocol(asyncio.Protocol):
     def __init__(self, loop, message=None):
         self.loop = loop
-        self.num_of_cmd = 0
+        self.cmd_num = 0
         self.message = message
 
     def connection_made(self, transport):
-        print_announce("Connection made!")
+        printx("Connection made!")
         self.dataHandler = DataHandler(transport)
         if self.message != None:
             self.dataHandler.send(self.message)
@@ -26,19 +30,23 @@ class ClientProtocol(asyncio.Protocol):
             self.cmdHandler(cmd)
 
     def connection_lost(self, exc):
-        print_announce('The server closed the connction')
-        print_announce('Stop the event loop')
+        printx('The server closed the connction')
+        printx('Stop the event loop')
         self.loop.stop()
 
     def cmdHandler(self, cmd):
         first_word_cmd = cmd.split(' ')[0]
-        if self.num_of_cmd+1 <= len(E3_STUDENT_CLIENT_SEND_STRINGS):
+        if self.cmd_num+1 <= len(E3_ESCAPE_STRING1) and self.cmd_num != 6:
             self.dataHandler.send(
-                E3_STUDENT_CLIENT_SEND_STRINGS[self.num_of_cmd])
-            self.num_of_cmd += 1
+                E3_ESCAPE_STRING1[self.cmd_num])
+            self.cmd_num += 1
             return
+        elif self.cmd_num == 6:
+            if(cmd.split(' ')[-1] == "wall"):
+                self.dataHandler.send(E3_ESCAPE_STRING1[self.cmd_num])
+                self.cmd_num += 1
         elif first_word_cmd == 'CLIENT':
-            print_announce('Received client test ok')
+            printx('Received client test ok')
             return
 
 
