@@ -11,15 +11,32 @@ def printx(string):
     print(string.center(80, '-')+'\n')
 
 
-class pktCmdHandler:
-    def __init__(self, transport):
+class PktCmdHandler:
+    def __init__(self, transport, game=None):
         self.dataHandler = DataHandler(transport)
         self.cmd_num = 0
+        self.game = game
 
     def clientRecvData(data):
         pkts = self.dataHandler.recvInPkt(data)
         for pkt in pkts:
             self.handleClientPkt(pkt)
+        if self.game.status != "playing":
+            print
+
+    def serverRecvData(data):
+        pkts = self.dataHandler.recvInPkt(data)
+        for pkt in pkts:
+            self.handleServerPkt(pkt)
+        if self.game.status != "playing":
+            printx('Student server side finished!')
+
+    def handleServerPkt(self, pkt):
+        res = self.game.command(pkt.command())
+        sta = self.game.status
+        pkt = GameResponsePacket(res, sta)
+        self.dataHandler.sendInPkt(pkt)
+        time.sleep(0.25)
 
     def handleClientPkt(self, pkt):
         if pkt.DEFINITION_IDENTIFIER == "20194.exercise6.autogradesubmitresponse":
