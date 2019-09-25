@@ -24,8 +24,8 @@ class ClientProtocol(asyncio.Protocol):
         self.transport = transport
         self.dataHandler = DataHandler(transport)
 
-        self.dataHandler.send0()
-        # self.transport.write(b"<EOL>\n")
+        # self.dataHandler.send0()
+        self.transport.write(b"<EOL>\n")
 
         if self.message != None:
             self.dataHandler.send(self.message)
