@@ -1,4 +1,4 @@
-#!/home/student_20194/Xiangjun/2019-jhu-netsec/submisssions/netsec_env/bin/python3
+#!/home/student_20194/Xiangjun/JHU-19F-NetworkSecurity/submisssions/netsec_env/bin/python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'playground','console_scripts','launch_wan'
 __requires__ = 'playground'
 import re

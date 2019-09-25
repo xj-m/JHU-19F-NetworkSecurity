@@ -1,5 +1,5 @@
-from HW6.my_packet import *
-from HW6.E6_Datahandler import *
+from my_packet import *
+from E6_Datahandler import *
 PORT_NUM_STUDENT = 1107
 
 E6_STR = ['SUBMIT,Xiangjun,xjm@jhu.edu,2,'+str(PORT_NUM_STUDENT), "look mirror", "get hairpin",
