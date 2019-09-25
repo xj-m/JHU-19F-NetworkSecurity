@@ -2,7 +2,6 @@ from my_packet import *
 from dataHandler_E6 import *
 from escape_room_006 import EscapeRoomGame
 
-PORT_NUM_STUDENT = 1111
 E6_STR = ["look mirror", "get hairpin",
           'unlock chest with hairpin', 'open chest', 'look in chest', 'get hammer in chest', "hit flyingkey with hammer", "get key",
           "unlock door with key", "open door"]
@@ -13,9 +12,11 @@ def printx(string):
 
 
 class ClientCmdHandler:
-    def __init__(self, transport):
+    def __init__(self, transport,pkt=None):
         self.dataHandler = DataHandler(transport)
         self.cmd_num = 0
+        if(pkt!=None):
+            self.dataHandler.sendPkt(pkt)
 
     def clientRecvData(self, data):
         pkts = self.dataHandler.recvPkt(data)
