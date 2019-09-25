@@ -2,11 +2,11 @@ from playground.network.packet import PacketType
 FirstLjust = 6
 SecondLjust = 15
 
+
 class DataHandler:
     def __init__(self, transport):
         self.t = transport
         self.deserializer = PacketType.Deserializer()
-
 
     def sendInStr(self, string):
         # process, send, print a string
@@ -41,8 +41,7 @@ class DataHandler:
             self.printPkt(pkt)
             pkts.append(pkt)
         return pkts
-            # self.printRecv(pkg)
-        
+        # self.printRecv(pkg)
 
     def send0(self):
         self.t.write(b"<EOL>\n")
@@ -57,5 +56,6 @@ class DataHandler:
     def printPkt(self, pkt):
         for field in pkt.FIELDS:
             fName = field[0]
-            print("".ljust(FirstLjust)+fName.ljust(SecondLjust)+str(pkt._fields[fName]._data))
+            print("".ljust(FirstLjust)+fName.ljust(SecondLjust) +
+                  str(pkt._fields[fName]._data))
         print('\n')
