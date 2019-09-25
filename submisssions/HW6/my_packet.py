@@ -17,7 +17,8 @@ class GameCommandPacket(PacketType):
 
     @classmethod
     def create_game_command_packet(cls, cmd):
-        return cls(gameCmd = cmd)  # whatever arguments needed to construct the packet)
+        # whatever arguments needed to construct the packet)
+        return cls(cmd=cmd)
 
     def command(self):
         # MUST RETURN A STRING!
@@ -36,11 +37,13 @@ class GameResponsePacket(PacketType):
 
     @classmethod
     def create_game_response_packet(cls, response, status):
-        return cls(res = response, sta = status)  # whatever you need to construct the packet )
+        # whatever you need to construct the packet )
+        return cls(res=response, sta=status)
 
     def game_over(self):
         # MUST RETURN A BOOL
-        return self.status!="playing"  # whatever you need to do to determine if the game is over
+        # whatever you need to do to determine if the game is over
+        return self.sta != "playing"
 
     def status(self):
         # MUST RETURN game.status (as a string)
@@ -48,4 +51,4 @@ class GameResponsePacket(PacketType):
 
     def response(self):
         # MUST return game response as a string
-        return self.res # whatever you need to do to return the response
+        return self.res  # whatever you need to do to return the response

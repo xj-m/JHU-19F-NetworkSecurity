@@ -6,7 +6,9 @@ from serverCmdHandler_E6 import *
 from playground.common.logging import EnablePresetLogging, PRESET_VERBOSE
 EnablePresetLogging(PRESET_VERBOSE)
 
-PORT_NUM = 1111
+PORT_NUM = 1109
+
+
 
 
 class ServerProtocol(asyncio.Protocol):
