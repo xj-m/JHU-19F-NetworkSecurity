@@ -3,7 +3,7 @@ import playground
 import time
 import sys
 from escape_room_006 import EscapeRoomGame
-from E6_Datahandler import DataHandler
+from HW6.E6_cmdHandler import *
 
 
 def printx(string):
@@ -12,29 +12,23 @@ def printx(string):
 
 class ServerProtocol(asyncio.Protocol):
     def connection_made(self, transport):
-        printx('Connection made')
         # NOTE: why this line have to exist?
         self.transport = transport
-        self.dataHandler = DataHandler(transport)
-        self.dataHandler.send('hi')
+        printx('Connection made')
 
-        # self.transport = transport
-        # self.transport.write(b"<EOL>\n")
+        game = EscapeRoomGame(output=self.dataHandler.send)
+        game.create_game()
+        game.start()
 
-        self.game = EscapeRoomGame(output=self.dataHandler.send)
-        self.game.create_game()
-        self.game.start()
+        self.cmdHandler = PktCmdHandler(transport, game)
+        self.cmdHandler.dataHandler.send('hi')
+
         self.loop = asyncio.get_event_loop()
         self.loop.create_task(asyncio.wait(
             [asyncio.ensure_future(a) for a in self.game.agents]))
 
     def data_received(self, data):
-        cmds = self.dataHandler.recv(data)
-        for cmd in cmds:
-            self.dataHandler.send(self.game.command(cmd))
-            time.sleep(0.25)
-        if self.game.status != "playing":
-            printx('Student server side finished!')
+        self.cmdHandler.serverRecvData(data)
 
 
 def main(args):
