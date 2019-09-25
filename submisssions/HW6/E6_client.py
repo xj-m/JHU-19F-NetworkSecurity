@@ -4,9 +4,9 @@ import sys
 from autograder_ex6_packets import *
 from playground.network.packet import PacketType
 
-from HW6.my_packet import *
+from my_packet import *
 from E6_Datahandler import DataHandler
-from HW6.E6_cmdHandler import *
+from E6_cmdHandler import *
 # from playground.common.logging import EnablePresetLogging, PRESET_DEBUG
 # EnablePresetLogging(PRESET_DEBUG)
 
