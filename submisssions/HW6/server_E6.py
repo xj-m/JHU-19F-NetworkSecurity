@@ -2,7 +2,7 @@ import asyncio
 import playground
 import time
 import sys
-from cmdHandler_E6 import ServerCmdHandler 
+from cmdHandler_E6 import ServerCmdHandler, printx
 from playground.common.logging import EnablePresetLogging, PRESET_VERBOSE
 EnablePresetLogging(PRESET_VERBOSE)
 
