@@ -7,8 +7,6 @@ from cmdHandler_E6 import ClientCmdHandler, printx
 # from playground.common.logging import EnablePresetLogging, PRESET_DEBUG
 # EnablePresetLogging(PRESET_DEBUG)
 
-Check_result_mode = False
-
 
 def getFirstPkt():
     pkt = AutogradeStartTest(
@@ -21,6 +19,11 @@ def getFirstPkt():
 def getCheckResPkt():
     return AutogradeResultRequest(
         test_id="98c7a7bcbbae47a48dd7686c498038f6ec15f015830c8ae3500bce12f9e9436c")
+
+
+# set the pkt that will send right after connection made
+Check_result_mode = True
+firstPkt = getCheckResPkt() if Check_result_mode else getFirstPkt()
 
 
 class ClientProtocol(asyncio.Protocol):
@@ -45,8 +48,6 @@ class ClientProtocol(asyncio.Protocol):
 
 def main(args):
     loop = asyncio.get_event_loop()
-    # set the pkt that will send right after connection made
-    firstPkt = getFirstPkt() if (Check_result_mode == False) else getCheckResPkt()
     coro = playground.create_connection(lambda: ClientProtocol(loop=loop, firstPkt=firstPkt),
                                         "20194.0.0.19000", 19006)  # for E5
     loop.run_until_complete(coro)

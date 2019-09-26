@@ -100,7 +100,6 @@ class DataHandler:
             self.printPkt(pkt)
             pkts.append(pkt)
         return pkts
-        # self.printRecv(pkg)
 
     def printSent(self, string):
         print("sent:".ljust(FL)+string)
