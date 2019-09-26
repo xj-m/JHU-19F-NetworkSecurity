@@ -2,20 +2,17 @@ import asyncio
 import playground
 import time
 import sys
-from serverCmdHandler_E6 import *
+from cmdHandler import ServerCmdHandler 
 from playground.common.logging import EnablePresetLogging, PRESET_VERBOSE
 EnablePresetLogging(PRESET_VERBOSE)
 
 PORT_NUM = 1109
 
-
-
-
 class ServerProtocol(asyncio.Protocol):
     def connection_made(self, transport):
         printx('Connection made')
         self.transport = transport  # NOTE: why this line have to exist?
-        self.cmdHandler = PktCmdHandler(transport)
+        self.cmdHandler = ServerCmdHandler(transport)
 
         self.loop = asyncio.get_event_loop()
         self.loop.create_task(asyncio.wait(
