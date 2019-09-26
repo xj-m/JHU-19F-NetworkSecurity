@@ -1,14 +1,27 @@
 import time
 from playground.network.packet import PacketType
-from my_packet import *
+from Packets_E6 import *
 from escape_room_006 import EscapeRoomGame
 
-E6_STR = ["look mirror", "get hairpin",
-          'unlock chest with hairpin', 'open chest', 'look in chest', 'get hammer in chest', "hit flyingkey with hammer", "get key",
-          "unlock door with key", "open door"]
+E6_STRS = ["look mirror",
+           "get hairpin",
+           'unlock chest with hairpin',
+           'open chest',
+           'look in chest',
+           'get hammer in chest',
+           "hit flyingkey with hammer",
+           "get key",
+           "unlock door with key",
+           "open door"]
+
+# for formatting print
+FL = 7
+SL = 15
+
 
 def printx(string):
     print(string.center(80, '-')+'\n')
+
 
 class ServerCmdHandler:
     def __init__(self, transport):
@@ -33,11 +46,13 @@ class ServerCmdHandler:
         pkt = GameResponsePacket(res=string, sta=self.game.status)
         self.dataHandler.sendPkt(pkt)
 
+
 class ClientCmdHandler:
-    def __init__(self, transport,pkt=None):
+    def __init__(self, transport, pkt=None):
         self.dataHandler = DataHandler(transport)
         self.cmd_num = 0
-        if(pkt!=None):
+        self.pkt = pkt
+        if(self.pkt != None):
             self.dataHandler.sendPkt(pkt)
 
     def clientRecvData(self, data):
@@ -46,31 +61,28 @@ class ClientCmdHandler:
             self.handleClientPkt(pkt)
 
     def handleClientPkt(self, pkt):
+        # first received pkt
         if pkt.DEFINITION_IDENTIFIER == "20194.exercise6.autogradesubmitresponse":
             self.sendGameCmdPkt()
 
         cmd = pkt.response()
-        first_word = cmd.split(' ')[0]
 
         if self.cmd_num != 6:
             self.sendGameCmdPkt()
         elif self.cmd_num == 6:
             if(cmd.split(' ')[-1] == 'wall'):
                 self.sendGameCmdPkt()
-        elif first_word == 'VICTORY!':
-            printx("Received client test ok")
 
     def sendGameCmdPkt(self):
-        if self.cmd_num + 1 > len(E6_STR):
+        if self.cmd_num + 1 > len(E6_STRS):
             return
         self.dataHandler.sendPkt(GameCommandPacket(
-            cmd=E6_STR[self.cmd_num]))
+            cmd=E6_STRS[self.cmd_num]))
         self.cmd_num += 1
+
 
 class DataHandler:
     def __init__(self, transport):
-        self.fl = 7
-        self.sl = 15
         self.t = transport
         self.deserializer = PacketType.Deserializer()
 
@@ -91,14 +103,14 @@ class DataHandler:
         # self.printRecv(pkg)
 
     def printSent(self, string):
-        print("sent:".ljust(self.fl)+string)
+        print("sent:".ljust(FL)+string)
 
     def printRecv(self, string):
-        print('recv:'.ljust(self.fl)+string)
+        print('recv:'.ljust(FL)+string)
 
     def printPkt(self, pkt):
         for field in pkt.FIELDS:
             fName = field[0]
-            print("".ljust(self.fl)+fName.ljust(self.sl) +
+            print("".ljust(FL)+fName.ljust(SL) +
                   str(pkt._fields[fName]._data))
         print('\n')
