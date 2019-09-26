@@ -1,10 +1,10 @@
 import asyncio
 import playground
 import sys
-from autograder_ex6_packets import *
 
+from autograder_ex6_packets import *
 from my_packet import *
-from clientCmdHandler_E6 import *
+from cmdHandler_E6 import ClientCmdHandler 
 # from playground.common.logging import EnablePresetLogging, PRESET_DEBUG
 # EnablePresetLogging(PRESET_DEBUG)
 
