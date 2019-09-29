@@ -3,7 +3,7 @@ import playground
 import sys
 
 from autograder_ex6_packets import *
-from cmdHandler_E6 import ClientCmdHandler, printx
+from cmdHandler_E7 import ClientCmdHandler, printx
 # from playground.common.logging import EnablePresetLogging, PRESET_DEBUG
 # EnablePresetLogging(PRESET_DEBUG)
 
@@ -15,10 +15,10 @@ def getFirstPkt():
         pkt.packet_file = f.read()
     return pkt
 
-
+# TODO: set test id
 def getCheckResPkt():
     return AutogradeResultRequest(
-        test_id="98c7a7bcbbae47a48dd7686c498038f6ec15f015830c8ae3500bce12f9e9436c")
+        test_id="")
 
 
 # set the pkt that will send right after connection made
