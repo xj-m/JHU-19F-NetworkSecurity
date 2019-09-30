@@ -1,5 +1,6 @@
 from playground.network.packet import PacketType
 from playground.network.packet.fieldtypes import UINT32, STRING, BUFFER
+from playground.network.packet.fieldtypes.attributes import Optional
 
 class GameCommandPacket(PacketType):
     DEFINITION_IDENTIFIER = "exercise7.gamecommand"
@@ -21,7 +22,7 @@ class GameResponsePacket(PacketType):
     DEFINITION_VERSION = "1.0"
 
     FIELDS = [
-        ("response_string", STRING),
+        ("response_string", STRING({Optional: True})),
         ("status_string", STRING)
     ]
 
@@ -53,12 +54,12 @@ class GamePaymentRequest(PacketType):
     DEFINITION_IDENTIFIER = "exercise7.gamepaymentrequest"
     DEFINITION_VERSION = "1.0"
     FIELDS = [
-        ("unique_id", UINT32),
-        ("account", UINT32),
+        ("unique_id", STRING),
+        ("account", STRING),
         ("amount", UINT32)
     ]
 
-class GamePaymentResponse():
+class GamePaymentResponse(PacketType):
     DEFINITION_IDENTIFIER = "exercise7.gamepaymentresponse"
     DEFINITION_VERSION = "1.0"
     FIELDS = [
@@ -85,22 +86,13 @@ def process_game_pay_packet(pkt):
     return (pkt.receipt, pkt.receipt_sig)
 
 def create_game_response(response, status):
-    return GameResponsePacket(string_response=response, status_string=status)
+    return GameResponsePacket(response_string=response, status_string=status)
 
 def process_game_response(pkt):
-    return pkt.response_string
+    return pkt.response_string, pkt.status_string
 
 def create_game_command(command):
     return GameCommandPacket(command_string=command)
 
 def process_game_command(pkt):
     return pkt.command_string
-
-
-
-
-
-
-Message #general
-
-
