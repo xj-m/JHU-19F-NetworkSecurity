@@ -1,7 +1,17 @@
+import sys
+import os
 import time
+import asyncio
+sys.path.insert(1, '../../BitPoints-Bank-Playground3/src/')
 from playground.network.packet import PacketType
-from Packets_E6 import *
+from Packets_E7 import *
 from escape_room_006 import EscapeRoomGame
+from CipherUtil import loadCertFromFile
+from OnlineBank import BankClientProtocol, OnlineBankConfig
+import playground
+import getpass
+# insert at 1, 0 is the script path (or '' in REPL)
+
 
 E6_STRS = ["look mirror",
            "get hairpin",
@@ -13,19 +23,77 @@ E6_STRS = ["look mirror",
            "get key",
            "unlock door with key",
            "open door"]
+
 # TODO: set following
-UNAME = ""
+UNAME = "xma39"
+PASS = ""
 TEST_UNAME = ""
-ACCOUNT =""
+MY_ACCOUNT = "xma39_account"
 AMOUNT = 10
+
 
 # for formatting print
 FL = 7
-SL = 15
+SL = 20
 
 
 def printx(string):
     print(string.center(80, '-')+'\n')
+
+
+class BankManager:
+    def __init__(self):
+        bankconfig = OnlineBankConfig()
+        self.bank_addr = bankconfig.get_parameter("CLIENT", "bank_addr")
+        self.bank_port = int(bankconfig.get_parameter("CLIENT", "bank_port"))
+        # bank_stack = bankconfig.get_parameter("CLIENT", "stack", "default")
+        self.bank_username = bankconfig.get_parameter("CLIENT", "username")
+        self.certPath = os.path.join(bankconfig.path(), "20194_online_bank.cert")
+        self.bank_cert = loadCertFromFile(self.certPath)
+        self.bank_client = BankClientProtocol(
+            self.bank_cert, self.bank_username, PASS)
+
+    async def transfer(self, src, dst, amount, memo):
+
+        # get bank_client
+        password = getpass.getpass("Enter password for {}: ".format(self.bank_username))
+        self.bank_client = BankClientProtocol(
+            self.bank_cert, self.bank_username, password)
+
+        # connect to bank port
+        await playground.create_connection(
+            lambda: self.bank_client,
+            self.bank_addr,
+            self.bank_port,
+            family='default'
+        )
+        print("Connected. Logging in.")
+
+        # bank_client login
+        try:
+            await self.bank_client.loginToServer()
+        except Exception as e:
+            print("Login error. {}".format(e))
+            return (None, None)
+        # bank_client swtch account
+        try:
+            await self.bank_client.switchAccount(MY_ACCOUNT)
+        except Exception as e:
+            print("Could not set source account as {} because {}".format(
+                src,
+                e))
+            return (None, None)
+        # get transfer result
+        try:
+            result = await self.bank_client.transfer(dst, amount, memo)
+        except Exception as e:
+            print("Could not transfer because {}".format(e))
+            return (None, None)
+
+        receipt = result.Receipt
+        receipt_sig = result.ReceiptSignature
+        return (receipt, receipt_sig)
+
 
 class ClientCmdHandler:
     def __init__(self, transport, pkt=None):
@@ -34,6 +102,7 @@ class ClientCmdHandler:
         self.pkt = pkt
         if(self.pkt != None):
             self.dataHandler.sendPkt(pkt)
+        self.bankManager = BankManager()
 
     def clientRecvData(self, data):
         pkts = self.dataHandler.recvPkt(data)
@@ -44,16 +113,17 @@ class ClientCmdHandler:
         pktID = pkt.DEFINITION_IDENTIFIER
         # respond to auto grade submit pkt
         if pktID == "20194.exercise6.autogradesubmitresponse":
+            if pkt.client_status == 1:
+                return
             self.sendGameInitRequestPkt()
-        
+
         # respond to game payment request pkt
         elif pktID == "exercise7.gamepaymentrequest":
-            # TODO: check if this syntax works
             id, account, amount = process_game_require_pay_packet(pkt)
-            self.sendGamePaymentResponsePkt(id,account,amount)
-        
+            asyncio.create_task(self.sendGamePaymentResponsePkt(id, account, amount))
+
         elif pktID == "exercise7.gameresponse":
-            # respond to game response 
+            # respond to game response
             cmd = pkt.response()
             if self.cmd_num != 6:
                 self.sendGameCmdPkt()
@@ -63,33 +133,30 @@ class ClientCmdHandler:
         else:
             printx("unknown pkt recived:" + pktID)
 
-    def sendGameInitRequestPkt():
+    def sendGameInitRequestPkt(self):
         pkt = create_game_init_packet(TEST_UNAME)
         self.dataHandler.sendPkt(pkt)
 
-    def sendGamePaymentResponsePkt(id,account,amount):
+    async def sendGamePaymentResponsePkt(self, id, account, amount):
         if(amount > 10):
-            printx("the amount is "+amount+", which is over 10, so stop the process")
+            printx("the amount is "+amount +
+                   ", which is over 10, so stop the process")
             return
-        receipt, receipt_sig = self.bankTransfer(id, account, amount)
-        if(receipt = None or receipt_sig = None):
+
+        receipt, receipt_sig =await self.bankManager.transfer(MY_ACCOUNT, account, amount, id)
+        if(receipt == None or receipt_sig == None):
             printx("the bank transaction didn't complete, so the process stopped")
             return
         pkt = create_game_pay_packet(receipt, receipt_sig)
         self.dataHandler.sendPkt(pkt)
 
-    # TODO:
-    def bankTransfer(id,account,amount):
-        receipt = None
-        receipt_sig = None
-        return (receipt,receipt_sig)
-
     def sendGameCmdPkt(self):
         if self.cmd_num + 1 > len(E6_STRS):
             return
         self.dataHandler.sendPkt(GameCommandPacket(
-            cmd=E6_STRS[self.cmd_num]))
+            command_string=E6_STRS[self.cmd_num]))
         self.cmd_num += 1
+
 
 class ServerCmdHandler:
     def __init__(self, transport):
@@ -97,14 +164,13 @@ class ServerCmdHandler:
         self.cmd_num = 0
         self.game = EscapeRoomGame(output=self.sendGameResPkt)
         self.game.create_game()
-        self.game.start()
         self.payStatus = False
 
     def serverRecvData(self, data):
         pkts = self.dataHandler.recvPkt(data)
         for pkt in pkts:
             self.handleServerPkt(pkt)
-        if self.game.status != "playing":
+        if self.game.status == "escaped":
             self.payStatus = False
             printx('Student server side finished!')
 
@@ -116,13 +182,16 @@ class ServerCmdHandler:
 
         # respond to game payment response pkt
         elif pktID == "exercise7.gamepaymentresponse":
-            receipt,receipt_sig = process_game_pay_packet(pkt)
-            if(self.checkPayment(receipt,receipt_sig)):
+            receipt, receipt_sig = process_game_pay_packet(pkt)
+            if(self.checkPayment(receipt, receipt_sig)):
                 printx("payment confirmed")
                 self.payStatus = True
+                # if passed
+                self.game.start()
             else:
                 printx("payment confirm failed")
 
+        # respond to game command pkt
         elif pktID == "exercise7.gamecommand":
             if self.payStatus:
                 self.game.command(pkt.command())
@@ -133,18 +202,18 @@ class ServerCmdHandler:
         else:
             printx("unknown pkt:" + pktID)
 
-    def sendGamePaymentRequestPkt():
-        pkt = create_game_require_pay_packet(UNAME,ACCOUNT, AMOUNT)
+    def sendGamePaymentRequestPkt(self):
+        pkt = create_game_require_pay_packet(UNAME, MY_ACCOUNT, AMOUNT)
         self.dataHandler.sendPkt(pkt)
 
-    def checkPayment(receipt,receipt_sig):
-        # TODO: complete this func
-        return False
-    
+    def checkPayment(self, receipt, receipt_sig):
+        # TODO: check payment, and return true if payment confirmed
+        return True
 
     def sendGameResPkt(self, string):
-        pkt = create_game_response(res=string, sta=self.game.status)
+        pkt = create_game_response(string, self.game.status)
         self.dataHandler.sendPkt(pkt)
+
 
 class DataHandler:
     def __init__(self, transport):
