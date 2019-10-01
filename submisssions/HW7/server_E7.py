@@ -6,7 +6,7 @@ from cmdHandler_E7 import ServerCmdHandler, printx
 # from playground.common.logging import EnablePresetLogging, PRESET_VERBOSE
 # EnablePresetLogging(PRESET_VERBOSE)
 
-PORT_NUM = 1109
+PORT_NUM = 1107
 
 
 class ServerProtocol(asyncio.Protocol):
@@ -14,10 +14,13 @@ class ServerProtocol(asyncio.Protocol):
         printx('Connection made')
         self.transport = transport  # NOTE: why this line have to exist?
         self.cmdHandler = ServerCmdHandler(transport)
-
-        self.loop = asyncio.get_event_loop()
-        self.loop.create_task(asyncio.wait(
-            [asyncio.ensure_future(a) for a in self.cmdHandler.game.agents]))
+        # NOTE:py3.7 
+        for a in self.cmdHandler.game.agents:
+            asyncio.create_task(a)
+        # NOTE:This is for py3.6
+        # self.loop = asyncio.get_event_loop()
+        # self.loop.create_task(asyncio.wait(
+        #     [asyncio.ensure_future(a) for a in self.cmdHandler.game.agents]))
 
     def data_received(self, data):
         self.cmdHandler.serverRecvData(data)
