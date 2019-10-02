@@ -14,9 +14,11 @@ class ServerProtocol(asyncio.Protocol):
         printx('Connection made')
         self.transport = transport  # NOTE: why this line have to exist?
         self.cmdHandler = ServerCmdHandler(transport)
-        # NOTE:py3.7 
+
+        # NOTE:py3.7
         for a in self.cmdHandler.game.agents:
             asyncio.create_task(a)
+
         # NOTE:This is for py3.6
         # self.loop = asyncio.get_event_loop()
         # self.loop.create_task(asyncio.wait(

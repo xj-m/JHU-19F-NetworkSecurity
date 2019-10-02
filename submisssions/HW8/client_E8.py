@@ -11,14 +11,18 @@ from class_packet import *
 IPADDR = "20194.0.0.19000"
 PORT = 19008
 
+
 def getFirstPkt():
     pkt = AutogradeStartTest(
         name="xiangjun", email="xjm@jhu.edu", team=2, port=1107)
     return pkt
 
 # TODO: add testid
+
+
 def getCheckResPkt():
     return AutogradeResultRequest(test_id="d46151037741d786b287eb79cce4eb15fce48d10a46652b040f0774c1b3a1838")
+
 
 class ClientProtocol(asyncio.Protocol):
     def __init__(self, loop, firstPkt=None):
@@ -42,16 +46,17 @@ class ClientProtocol(asyncio.Protocol):
 
 def main(args):
     loop = asyncio.get_event_loop()
-    # NOTE: this for change into check mode 
+    # NOTE: this for change into check mode
     if len(args) != 0:
-        firstPkt = getCheckResPkt() if args[0]=="check" else getFirstPkt()
+        firstPkt = getCheckResPkt() if args[0] == "check" else getFirstPkt()
     else:
         firstPkt = getFirstPkt()
     coro = playground.create_connection(lambda: ClientProtocol(loop=loop, firstPkt=firstPkt),
-                                       IPADDR , PORT)  # for E5
+                                        IPADDR, PORT)  # for E5
     loop.run_until_complete(coro)
     loop.run_forever()
     loop.close()
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
