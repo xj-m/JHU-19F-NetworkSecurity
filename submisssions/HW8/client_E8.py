@@ -21,7 +21,7 @@ def getFirstPkt():
 
 
 def getCheckResPkt():
-    return AutogradeResultRequest(test_id="d46151037741d786b287eb79cce4eb15fce48d10a46652b040f0774c1b3a1838")
+    return AutogradeResultRequest(test_id="07a2fccd724a998b1c59f11879da5f0047a25e28ad536e5c1ad0bb8e45078526")
 
 
 class ClientProtocol(asyncio.Protocol):
