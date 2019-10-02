@@ -4,22 +4,21 @@ import sys
 
 from autograder_ex8_packets import *
 from cmdHandler_E8 import ClientCmdHandler, printx
+from class_packet import *
 # from playground.common.logging import EnablePresetLogging, PRESET_DEBUG
 # EnablePresetLogging(PRESET_DEBUG)
 
 IPADDR = "20194.0.0.19000"
-PORT = 19007
+PORT = 19008
 
 def getFirstPkt():
     pkt = AutogradeStartTest(
         name="xiangjun", email="xjm@jhu.edu", team=2, port=1107)
-    with open("Packets_E7.py", "rb") as f:
-        pkt.packet_file = f.read()
     return pkt
 
-
+# TODO: add testid
 def getCheckResPkt():
-    return AutogradeResultRequest(test_id="653feafb11e66d841e4647313bdcf4c701bc4b6a703b4a9ec62ff2b347ad0cce")
+    return AutogradeResultRequest(test_id="d46151037741d786b287eb79cce4eb15fce48d10a46652b040f0774c1b3a1838")
 
 class ClientProtocol(asyncio.Protocol):
     def __init__(self, loop, firstPkt=None):

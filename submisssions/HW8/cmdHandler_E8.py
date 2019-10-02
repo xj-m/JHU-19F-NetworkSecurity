@@ -5,6 +5,8 @@ import asyncio
 sys.path.insert(1, '../../BitPoints-Bank-Playground3/src/')
 from playground.network.packet import PacketType
 # from Packets_E7 import *
+from class_packet import *
+from autograder_ex8_packets import *
 from escape_room_006 import EscapeRoomGame
 from CipherUtil import loadCertFromFile
 from OnlineBank import BankClientProtocol, OnlineBankConfig
@@ -26,7 +28,7 @@ E6_STRS = ["look mirror",
 # bank params
 UNAME = "xma39"
 PASS = ""
-TEST_UNAME = "" # TODO:make sure of this
+TEST_UNAME = "test" # TODO:make sure of this
 MY_ACCOUNT = "xma39_account"
 AMOUNT = 10
 # for formatting print
@@ -113,20 +115,21 @@ class ClientCmdHandler:
     def handleClientPkt(self, pkt):
         pktID = pkt.DEFINITION_IDENTIFIER
         # 1: respond to auto grade submit pkt, request start game
-        if pktID == "20194.exercise6.autogradesubmitresponse":
+        if pktID == AutogradeTestStatus.DEFINITION_IDENTIFIER: 
             if pkt.client_status == 1:
                 return
             self.sendGameInitRequestPkt()
 
         # 2: respond to game payment request, make payment
-        elif pktID == "exercise7.gamepaymentrequest":
+        elif pktID == GameRequirePayPacket.DEFINITION_IDENTIFIER:
             id, account, amount = process_game_require_pay_packet(pkt)
             asyncio.create_task(self.sendGamePaymentResponsePkt(id, account, amount))
 
         # 3: respond to game response, send game cmd
-        elif pktID == "exercise7.gameresponse":
-            cmd = pkt.response()
-            if self.cmd_num == 6:
+        elif pktID == GameResponsePacket.DEFINITION_IDENTIFIER:
+            cmd = pkt.response
+            # NOTE: bug
+            if E6_STRS[self.cmd_num] == "hit flyingkey with hammer":
                 # wait until key moves to the wall
                 if(cmd.split(' ')[-1] == 'wall'):
                     self.sendGameCmdPkt()
@@ -160,7 +163,8 @@ class ClientCmdHandler:
         if self.cmd_num + 1 > len(E6_STRS):
             return
         self.dataHandler.sendPkt(GameCommandPacket(
-            command_string=E6_STRS[self.cmd_num]))
+            command=E6_STRS[self.cmd_num]))
+            # NOTE: bug
         self.cmd_num += 1
 
 
@@ -183,11 +187,11 @@ class ServerCmdHandler:
     def handleServerPkt(self, pkt):
         pktID = pkt.DEFINITION_IDENTIFIER
         # 1: respond to game init pkt, ask payment
-        if pktID == "exercise7.gameinit":
+        if pktID == GameInitPacket.DEFINITION_IDENTIFIER:
             self.sendGamePaymentRequestPkt()
 
         # 2: respond to game payment response pkt, confirm payment
-        elif pktID == "exercise7.gamepaymentresponse":
+        elif pktID == GamePayPacket.DEFINITION_IDENTIFIER:
             receipt, receipt_sig = process_game_pay_packet(pkt)
             if(self.checkPayment(receipt, receipt_sig)):
                 printx("payment confirmed")
@@ -198,9 +202,10 @@ class ServerCmdHandler:
                 printx("payment confirm failed")
 
         #3: respond to game command pkt, send game response
-        elif pktID == "exercise7.gamecommand":
+        elif pktID == GameCommandPacket.DEFINITION_IDENTIFIER:
             if self.payStatus:
-                self.game.command(pkt.command())
+                self.game.command(pkt.command)
+                # NOTE: bug
                 time.sleep(0.25)
             else:
                 printError("client try to play game before the payment is confirmed!")
