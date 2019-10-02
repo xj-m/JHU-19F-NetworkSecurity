@@ -1,6 +1,6 @@
 {
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "python.pythonPath": "py37_netsec_env/bin/python",
+    "python.pythonPath": "venvs/py37_netsec_env/bin/python",
     "git.ignoreLimitWarning": true
 }
