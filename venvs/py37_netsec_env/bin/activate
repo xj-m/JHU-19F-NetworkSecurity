@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/student_20194/Xiangjun/JHU-19F-NetworkSecurity/py37_netsec_env"
+VIRTUAL_ENV="/home/student_20194/Xiangjun/JHU-19F-NetworkSecurity/venvs/py37_netsec_env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

@@ -29,7 +29,7 @@ end
 # unset irrelevant variables
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/student_20194/Xiangjun/JHU-19F-NetworkSecurity/netsec_env"
+set -gx VIRTUAL_ENV "/home/student_20194/Xiangjun/JHU-19F-NetworkSecurity/venvs/netsec_env"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
@@ -52,7 +52,7 @@ if test -z "$VIRTUAL_ENV_DISABLE_PROMPT"
         set -l old_status $status
 
         # Prompt override?
-        if test -n "(netsec_env) "            
+        if test -n "(netsec_env) "
             printf "%s%s" "(netsec_env) " (set_color normal)
         else
             # ...Otherwise, prepend env
