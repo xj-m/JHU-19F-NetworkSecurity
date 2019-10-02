@@ -1,5 +1,6 @@
 {
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "python.pythonPath": "/usr/bin/python3.7"
+    "python.pythonPath": "py37_netsec_env/bin/python",
+    "git.ignoreLimitWarning": true
 }
