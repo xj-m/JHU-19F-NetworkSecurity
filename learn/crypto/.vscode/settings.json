@@ -1,0 +1,24 @@
+{
+    "python.pythonPath": "/Users/xiangjun/anaconda3/envs/play3/bin/python",
+    "cSpell.words": [
+        "CRFC",
+        "ECDSA",
+        "HKDF",
+        "PKCS",
+        "pemfy",
+        "pubk",
+        "signk",
+        "unpemfy",
+        "verik"
+    ],
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        ".",
+        "-p",
+        "*test.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.unittestEnabled": true
+}
